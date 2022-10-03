@@ -229,10 +229,11 @@ export default {
                     this.steps[2].display = true;
                     intoChain(this.chainData).then(res => {
                         console.log(res)
-                        if (res.data.onError !== []) {
+                        if (res.data.onError.length !== 0) {
                             this.chainError = res.data.onError;
                             console.log(this.chainError)
                         } else {
+                            // console.log(this.steps);
                             this.steps[2].icon = "";
                             this.steps[2].title = this.steps[2].done;
                             this.active = 3;
