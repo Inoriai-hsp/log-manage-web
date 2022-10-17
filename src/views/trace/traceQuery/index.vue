@@ -78,9 +78,9 @@
         <el-table-column label="数字摘要" align="center">
           <template slot-scope="scope">{{scope.row.fileHash}}</template>
         </el-table-column>
-        <el-table-column label="日志来源" align="center" :formatter="logTypeFormat">
+        <!-- <el-table-column label="日志来源" align="center" :formatter="logTypeFormat"> -->
           <!-- <template slot-scope="scope">{{scope.row.logType}}</template> -->
-        </el-table-column>
+        <!-- </el-table-column> -->
         <el-table-column label="日志类型" align="center" :formatter="typeFormat">
           <!-- <template slot-scope="scope">{{scope.row.type}}</template> -->
         </el-table-column>
@@ -94,7 +94,7 @@
           <template slot-scope="scope">
             <!-- <el-button type="primary" @click="handleDetail(scope.$index, scope.row)" size="small">数据锚定</el-button> -->
             <el-button type="primary" @click="handleTrace(scope.$index, scope.row)" size="small">溯源详情</el-button>
-            <!-- <el-button type="primary" @click="handleVisual(scope.$index, scope.row)" size="small">可视化</el-button> -->
+            <el-button type="primary" @click="handleChart(scope.$index, scope.row)" size="small">可视化</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -119,7 +119,7 @@
       </span>
     </el-dialog> -->
     <el-dialog title="行为记录溯源" :visible.sync="traceVisible">
-      <div>数字摘要：{{logHash}}</div>
+      <div><el-tag>{{logHash}}</el-tag></div>
       <div class="table-container">
         <el-table ref="opLogTable" :data="traceList" max-height="400" style="width: 100%;" v-loading="traceListLoading"
           border>
@@ -146,16 +146,17 @@
           </el-table-column> -->
         </el-table>
       </div>
-      <!-- <div class="pagination-container">
-        <el-pagination background layout="total, sizes,prev, pager, next,jumper" :page-sizes="[10]" :total="total">
+      <div class="pagination-container">
+        <el-pagination background @size-change="traceSizeChange" @current-change="traceCurrentChange"
+          layout="total, prev, pager, next,jumper" :page-sizes="[10]" :total="traceTotal">
         </el-pagination>
-      </div> -->
+      </div>
       <div style="clear: both;"></div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="traceVisible = false;" size="small">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="共指分析" :visible.sync="pointVisible">
+    <!-- <el-dialog title="共指分析" :visible.sync="pointVisible">
       <el-card class="filter-container" shadow="never">
         <div>
           <i class="el-icon-search"></i>
@@ -219,6 +220,9 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="pointVisible = false;" size="small">确 定</el-button>
       </span>
+    </el-dialog> -->
+    <el-dialog title="溯源可视化" :visible.sync="chartVisible">
+      <div ref="graph" style="width: 100%; height: 400px"></div>
     </el-dialog>
   </div>
 </template>
@@ -251,15 +255,17 @@ export default {
   data() {
     return {
       listQuery: Object.assign({}, defaultListQuery),
+      traceQuery: null,
       list: null,
       traceList: null,
       logHash: null,
       total: null,
+      traceTotal: null,
       logDetail: Object.assign({}, defaultLogDetail),
       listLoading: false,
       traceListLoading: false,
       dialogVisible: false,
-      pointVisible: false,
+      chartVisible: false,
       traceVisible: false,
       visualVisible: false,
       typeList: [
@@ -299,76 +305,121 @@ export default {
   created() {
     this.getList();
   },
-  mounted() {
-    this.getGraph()
-  },
+  // mounted() {
+  //   this.getGraph();
+  // },
   methods: {
     getGraph() {
       const graph = this.$refs.graph
       if (graph) {
         const myGraph = this.$echarts.init(graph)
         console.log(myGraph);
+        // const option = {
+        //   // title: {
+        //   //   text: 'Graph'
+        //   // },
+        //   tooltip: {},
+        //   animationDurationUpdate: 1500,
+        //   animationEasingUpdate: 'quinticInOut',
+        //   series: [
+        //     {
+        //       type: 'graph',
+        //       layout: 'circular',
+        //       symbolSize: 50,
+        //       roam: true,
+        //       label: {
+        //         show: true
+        //       },
+        //       edgeSymbol: ['circle', 'arrow'],
+        //       edgeSymbolSize: [4, 10],
+        //       edgeLabel: {
+        //         fontSize: 20
+        //       },
+        //       data: [
+        //         {
+        //           name: 'Node 1',
+        //         },
+        //         {
+        //           name: 'Node 2',
+        //         },
+        //         {
+        //           name: 'Node 3',
+        //         },
+        //         {
+        //           name: 'Node 4',
+        //         }
+        //       ],
+        //       links: [
+        //         {
+        //           source: 'Node 1',
+        //           target: 'Node 2'
+        //         },
+        //         {
+        //           source: 'Node 1',
+        //           target: 'Node 3'
+        //         },
+        //         {
+        //           source: 'Node 1',
+        //           target: 'Node 4'
+        //         },
+        //       ],
+        //       lineStyle: {
+        //         opacity: 0.9,
+        //         width: 2,
+        //         curveness: 0
+        //       }
+        //     }
+        //   ]
+        // }
         const option = {
-          // title: {
-          //   text: 'Graph'
-          // },
-          tooltip: {},
-          animationDurationUpdate: 1500,
-          animationEasingUpdate: 'quinticInOut',
+          xAxis: {
+            type: 'time',
+            axisLine: {
+              show: true,
+              onZero: false
+            }
+          },
+          yAxis: {
+            type: 'category',
+            // boundaryGap: false,
+            show: false
+          },
+          legend: {},
           series: [
             {
-              type: 'graph',
-              layout: 'circular',
-              symbolSize: 50,
-              roam: true,
-              label: {
-                show: true
-              },
-              edgeSymbol: ['circle', 'arrow'],
-              edgeSymbolSize: [4, 10],
-              edgeLabel: {
-                fontSize: 20
-              },
+              name: 'file1.pdf',
               data: [
-                {
-                  name: 'Node 1',
-                },
-                {
-                  name: 'Node 2',
-                },
-                {
-                  name: 'Node 3',
-                },
-                {
-                  name: 'Node 4',
-                }
-              ],
-              links: [
-                {
-                  source: 'Node 1',
-                  target: 'Node 2'
-                },
-                {
-                  source: 'Node 1',
-                  target: 'Node 3'
-                },
-                {
-                  source: 'Node 1',
-                  target: 'Node 4'
-                },
-              ],
-              lineStyle: {
-                opacity: 0.9,
-                width: 2,
-                curveness: 0
-              }
+                ['2022-08-29 08:34:00', 'create'],
+                ['2022-08-29 16:30:01', 'open'],
+                ['2022-08-29 18:56:25', 'create'],
+                ['2022-08-29 20:00:00', 'open']
+                ],
+              type: 'line'
+            },
+            {
+              name: 'file2.pdf',
+              data: [
+                ['2022-08-29 08:34:14', 'update'],
+                ['2022-08-29 16:30:01', 'delete'],
+                ['2022-08-29 18:56:25', 'update'],
+                ['2022-08-29 20:00:00', 'delete']
+                ],
+              type: 'line'
             }
-          ]
+          ],
+          tooltip: {
+            show: true,
+            trigger: 'item',
+            axisPointer: {
+              axis: 'x'
+            }
+          }
         }
         myGraph.setOption(option)
       }
     },
-    open() {
+    handleChart() {
+      this.chartVisible = true;
       this.$nextTick(() => {
         this.getGraph();
       })
@@ -395,46 +446,34 @@ export default {
         return 'hadoop'
       }
     },
-    // load() {
-    //   if (this.disabled) return;
-    //   this.shardQuery.shardIndex++;
-    //   getFileContentShard(this.shardQuery).then(res => {
-    //     if(res.data === null) {
-    //       this.disabled = true;
-    //     } else {
-    //       this.shardContent[0].content += res.data
-    //     }
-    //   })
-    //   console.log(this.shardQuery.shardIndex)
-    // },
-    handleDetail(index, row) {
-      // console.log(index, )
-      // getFileInfo(row.targetId).then(res => {
-      //   console.log(res);
-      //   this.logDetail = res.data;
-      //   this.shardQuery.fileId = row.targetId;
-      //   this.shardQuery.shardIndex = 0;
-      //   // getFileContentShard(this.shardQuery).then(res => {
-      //   //   console.log(res.data);
-      //   //   this.shardContent[0].content = res.data
-      //   //   console.log(this.shardContent)
-      //   // })
-      //   this.dialogVisible = true;
-      //   this.disabled = false;
-      // })
-      this.dialogVisible = true;
-    },
     handlePoint(index, row) {
       console.log("point");
       this.pointVisible = true;
       console.log(this.pointVisible);
     },
+    traceSizeChange(val) {
+      this.traceQuery.current = 1;
+      this.traceQuery.size = val;
+      this.getTraceList();
+    },
+    traceCurrentChange(val) {
+      this.traceQuery.current = val;
+      this.getTraceList();
+    },
     handleTrace(index, row) {
       this.traceVisible = true;
+      this.traceQuery = Object.assign({}, this.listQuery);
+      this.traceQuery.taskId = row.taskId;
+      this.traceQuery.current = 1;
+      this.traceQuery.size = 10;
+      console.log(this.traceQuery);
+      this.getTraceList();
+    },
+    getTraceList() {
       this.traceListLoading = true;
-      this.listQuery.taskId = row.taskId;
-      getDetailByTask(this.listQuery).then(res => {
+      getDetailByTask(this.traceQuery).then(res => {
         this.traceListLoading = false;
+        this.traceTotal = parseInt(res.data.total);
         console.log(res.data);
         this.traceList = res.data.records;
         this.logHash = this.traceList[0].logHash;

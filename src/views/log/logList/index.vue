@@ -37,12 +37,12 @@
       </el-button>
     </el-card>
     <div class="table-container">
-      <el-table ref="logListTable" style="width: 100%" :data="list" v-loading="listLoading" border>
+      <el-table ref="logListTable" style="width: 100%" max-height="500" :data="list" v-loading="listLoading" border>
         <el-table-column label="数字摘要" align="center" prop="fileHash">
         </el-table-column>
         <el-table-column label="日志类型" align="center" :formatter="typeFormat">
         </el-table-column>
-        <el-table-column label="日志来源" align="center" prop="logType">
+        <el-table-column label="日志来源" align="center" :formatter="logTypeFormat">
         </el-table-column>
         <el-table-column label="是否脱敏" align="center">
           <template slot-scope="scope">{{scope.row.desensitization}}</template>
@@ -178,7 +178,7 @@ export default {
         return 'kafka'
       }
       if (row.type === 3) {
-        return '系统日志'
+        return 'hadoop'
       }
     },
     handleAddLog() {

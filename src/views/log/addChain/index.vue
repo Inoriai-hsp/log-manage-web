@@ -28,8 +28,7 @@
                 <el-table-column label="数字摘要" align="center">
                     <template slot-scope="scope">{{scope.row.fileHash}}</template>
                 </el-table-column>
-                <el-table-column label="日志来源" align="center">
-                    <template slot-scope="scope">{{scope.row.type}}</template>
+                <el-table-column label="日志类型" align="center" :formatter="typeFormat">
                 </el-table-column>
                 <el-table-column label="文件路径" align="center">
                     <template slot-scope="scope">{{scope.row.filePath}}</template>
@@ -38,7 +37,7 @@
                     <template slot-scope="scope">{{scope.row.dataObj.map((item) => {return item.name}).join('，')}}</template>
                 </el-table-column>
                 <el-table-column label="任务进度" align="center">
-                    <template slot-scope="scope">{{scope.row.process}}</template>
+                    <template slot-scope="scope"><el-progress :text-inside="true" :stroke-width="26" :percentage="scope.row.process * 100" :status="scope.row.process === 1 ? 'success' : ''"></el-progress></template>
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
@@ -161,6 +160,28 @@ export default {
         })
     },
     methods: {
+        typeFormat(row, column) {
+            if (row.type === 1) {
+                return '安全日志'
+            }
+            if (row.type === 2) {
+                return '流量日志'
+            }
+            if (row.type === 3) {
+                return '系统日志'
+            }
+        },
+        logTypeFormat(row, column) {
+            if (row.logType === 4) {
+                return 'syslog'
+            }
+            if (row.type === 5) {
+                return 'kafka'
+            }
+            if (row.type === 3) {
+                return '系统日志'
+            }
+        },
         remoteMethod(query) {
             this.loading = true;
             this.options = getObjList(query).then(res => {
