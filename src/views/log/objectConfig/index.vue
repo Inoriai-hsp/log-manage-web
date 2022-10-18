@@ -41,14 +41,44 @@
                 <el-form-item label="描述：">
                     <el-input v-model="objectData.desc" style="width: 250px"></el-input>
                 </el-form-item>
-                <el-form-item v-for="(operation, index) in objectData.operationList" :label="'操作' + index + '：'"
+                <el-form-item label="密级：">
+                    <el-select v-model="selectedValue" placeholder="请选择密级" style="width: 250px">
+                    <el-option label="一级" :value=1></el-option>
+                    <el-option label="二级" :value=2></el-option>
+                    <el-option label="三级" :value=3></el-option>
+                    <el-option label="四级" :value=4></el-option>
+                    <el-option label="五级" :value=5></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="操作：">
+                    <el-input v-model="objectData.desc" style="width: 250px"></el-input>
+                    <el-button circle icon="el-icon-plus" @click="addOperation"></el-button>
+                </el-form-item>
+                <el-form-item v-for="(operation, index) in objectData.operationList"
                     :key="operation.key" :prop="'operationList.' + index + '.value'">
                     <el-input v-model="operation.value" style="width: 250px"></el-input>
-                    <el-button @click.prevent="removeDomain(operation)" type="danger">删除</el-button>
+                    <el-button circle icon="el-icon-minus" @click.prevent="removeDomain(operation)" type="danger"></el-button>
+                </el-form-item>
+                <el-form-item label="知悉用户：">
+                    <el-input v-model="objectData.desc" style="width: 250px"></el-input>
+                    <el-button circle icon="el-icon-plus" @click="addOperation"></el-button>
+                </el-form-item>
+                <el-form-item v-for="(operation, index) in objectData.operationList"
+                    :key="operation.key" :prop="'operationList.' + index + '.value'">
+                    <el-input v-model="operation.value" style="width: 250px"></el-input>
+                    <el-button circle icon="el-icon-minus" @click.prevent="removeDomain(operation)" type="danger"></el-button>
+                </el-form-item>
+                <el-form-item label="脱敏信息：">
+                    <el-input v-model="objectData.desc" style="width: 250px"></el-input>
+                    <el-button circle icon="el-icon-plus" @click="addOperation"></el-button>
+                </el-form-item>
+                <el-form-item v-for="(operation, index) in objectData.operationList"
+                    :key="operation.key" :prop="'operationList.' + index + '.value'">
+                    <el-input v-model="operation.value" style="width: 250px"></el-input>
+                    <el-button circle icon="el-icon-minus" @click.prevent="removeDomain(operation)" type="danger"></el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('objectForm')">提交</el-button>
-                    <el-button @click="addOperation">新增操作</el-button>
                     <el-button @click="resetForm('objectForm')">重置</el-button>
                 </el-form-item>
             </el-form>
@@ -82,6 +112,7 @@ export default {
             listLoading: false,
             dialogVisible: false,
             objectData: Object.assign({}, defaultObjectData),
+            selectedValue: 2
         }
     },
     created() {
@@ -162,6 +193,3 @@ export default {
 <style>
 
 </style>
-  
-  
-  

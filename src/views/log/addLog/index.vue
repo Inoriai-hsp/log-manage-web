@@ -26,6 +26,9 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="业务系统：">
+          <el-input style="width: 250px"></el-input>
+        </el-form-item>
         <el-form-item label="是否脱敏：">
           <el-radio-group v-model="logData.desensitization">
             <el-radio :label="true">是</el-radio>

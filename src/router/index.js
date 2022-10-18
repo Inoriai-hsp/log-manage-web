@@ -66,6 +66,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/log/addChain/index'),
         meta: {title: '日志上链', icon: 'product-add'},
         hidden: true
+      },
+      {
+        path: 'businessUser',
+        name: 'businessUser',
+        component: () => import('@/views/log/businessUser/index'),
+        meta: {title: '业务用户', icon: 'product-add'}
       }
     ]
   },
@@ -84,6 +90,20 @@ export const asyncRouterMap = [
         // meta: {title: '溯源查询', icon: 'eye'}
         meta: {title: '日志溯源', icon: 'tree'},
       },
+    ]
+  },
+  {
+    path:'/pointAnalysis',
+    component: Layout,
+    redirect: '/pointAnalysis',
+    name: 'pointAnalysis',
+    children: [
+      {
+        path: 'pointAnalysis',
+        name: 'pointAnalysis',
+        component: () => import('@/views/pointAnalysis/index'),
+        meta: {title: '共指分析', icon: 'ums-admin'}
+      }
     ]
   },
   {

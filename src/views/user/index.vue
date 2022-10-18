@@ -16,12 +16,12 @@
         <el-table-column label="用户名" align="center">
           <template slot-scope="scope">{{scope.row.username}}</template>
         </el-table-column>
-        <el-table-column label="用户地址" align="center">
+        <el-table-column label="用户类型" align="center">
           <template slot-scope="scope">{{scope.row.address}}</template>
         </el-table-column>
-        <el-table-column label="群组" align="center">
+        <!-- <el-table-column label="群组" align="center">
           <template slot-scope="scope">{{scope.row.groupId}}</template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" width="180" align="center">
           <template slot-scope="scope">
             <el-button size="mini"
@@ -107,12 +107,28 @@
         userData: Object.assign({}, defaultUserData),
         typeList: [
           {
-            id: 1,
+            id: 0,
             name: "管理员用户"
           },
           {
+            id: 1,
+            name: "一级用户"
+          },
+          {
             id: 2,
-            name: "普通用户"
+            name: "二级用户"
+          },
+          {
+            id: 3,
+            name: "三级用户"
+          },
+          {
+            id: 4,
+            name: "四级用户"
+          },
+          {
+            id: 5,
+            name: "五级用户"
           }
         ]
       }
